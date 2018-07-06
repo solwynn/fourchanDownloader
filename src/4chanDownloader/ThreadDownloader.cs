@@ -56,13 +56,13 @@ namespace fourchanDownloader
 				}
 				dirInit = true;
 			}
-			Console.WriteLine(dirName);
+			Console.WriteLine($"Directory initialized: {dirName}");
 		}
 
 		async private Task<string> GetThreadJson()
 		{
 			string content;
-			Uri JsonURL = new Uri($"http://a.4cdn.org/{Url.Segments[1]}thread/{Url.Segments[3]}.json");
+			Uri JsonURL = new Uri($"{Url.Scheme}://a.4cdn.org/{Url.Segments[1]}thread/{Url.Segments[3]}.json");
 			HttpResponseMessage responseMsg = (await client.GetAsync(JsonURL)).EnsureSuccessStatusCode();
 			content = await responseMsg.Content.ReadAsStringAsync();
 			return content.Substring(9, content.Length - 9).TrimEnd('}');
@@ -76,7 +76,7 @@ namespace fourchanDownloader
 		async public Task DownloadImage(ApiPostModel post)
 		{
 			string saveLoc = $"Downloads/{dirName}/{post.Filename}.{post.Ext}";
-			Uri ImageUrl = new Uri($"http://is2.4chan.org/{Url.Segments[1]}{post.ImageID}{post.Ext}");
+			Uri ImageUrl = new Uri($"{Url.Scheme}://is2.4chan.org/{Url.Segments[1]}{post.ImageID}{post.Ext}");
 			HttpResponseMessage responseMsg;
 
 			if (!PreserveFileName) saveLoc = $"Downloads/{dirName}/{post.ImageID}.{post.Ext}";
