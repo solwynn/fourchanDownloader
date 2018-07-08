@@ -18,8 +18,5 @@ namespace fourchanDownloader
 
 		[JsonProperty("semantic_url", NullValueHandling = NullValueHandling.Ignore)]
 		public string ThreadContent { get; set; }
-
-		[JsonProperty("fsize", NullValueHandling = NullValueHandling.Ignore)]
-		public int FileSize { get; set; }
 	}
 }
