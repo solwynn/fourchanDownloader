@@ -99,7 +99,6 @@ namespace fourchanDownloader
 			{
 				Console.WriteLine(err);
 			}
-
 		}
 
 		async public Task DownloadThread()
