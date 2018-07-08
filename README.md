@@ -1,4 +1,4 @@
-# fourchanDownloader  
+# fourchanDownloader [![CodeFactor](https://www.codefactor.io/repository/github/willowsnow/fourchandownloader/badge)](https://www.codefactor.io/repository/github/willowsnow/fourchandownloader) 
 A program I wrote in a few hours to download every image from a 4chan thread, with multi-thread support.
   
 # Downloads  
