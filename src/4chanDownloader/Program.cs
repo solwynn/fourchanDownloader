@@ -4,10 +4,6 @@ namespace fourchanDownloader
 {
 	class Program
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="args"></param>
 		static void Main(string[] args)
 		{
 			Parser.Default.ParseArguments<ArgModel>(args)

@@ -9,62 +9,63 @@ namespace fourchanDownloader
 {
 	public class ThreadDownloader
 	{
-		private string dirName;
-		private bool dirInit = false;
+		private static HttpClient Client = new HttpClient();
+		private string DirName;
+		private bool DirInit = false;
 		public bool PreserveFileName { get; }
-		public Uri Url { get; }
 		public int Threads;
-		private static HttpClient client = new HttpClient();
-		
-		static ThreadDownloader()
-		{
-			client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("*");
-			client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36");
-			client.DefaultRequestHeaders.Accept.ParseAdd("*/*");
-		}
+		public Uri Url { get; }
 
-		public ThreadDownloader(string _Url, bool _PreserveFileName, int _Threads)
-		{
-			Url = new Uri(_Url);
-
-			PreserveFileName = _PreserveFileName;
-			Threads = _Threads;
-		}
-
+		// thank you to Michael Minton (https://stackoverflow.com/users/1488979/michael-minton) from stackoverflow
+		// https://stackoverflow.com/questions/146134/how-to-remove-illegal-characters-from-path-and-filenames
 		private static string CleanFileName(string fileName)
 		{
 			return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 		}
 
-		private void DirCreate(ApiPostModel OriginalPost)
+		static ThreadDownloader()
+		{
+			Client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("application/json");
+			Client.DefaultRequestHeaders.UserAgent.ParseAdd("fcD (https://github.com/willowsnow/fourchanDownloader/)");
+		}
+
+		public ThreadDownloader(string url, bool preserveFileName, int threads)
+		{
+			PreserveFileName = preserveFileName;
+			Threads = threads;
+			Url = new Uri(url);
+		}
+
+		private void DirCreate(ApiPostModel originalPost)
 		{
 			if (!Directory.Exists("Downloads"))
 			{
 				Directory.CreateDirectory("Downloads");
 			}
 
-			if (!dirInit)
+			if (!DirInit)
 			{
-				if (OriginalPost.ThreadContent != null)
+				if (originalPost.ThreadContent != null)
 				{
-					dirName = CleanFileName(OriginalPost.ThreadContent);
-					Directory.CreateDirectory($"Downloads/{dirName}");
+					DirName = CleanFileName(originalPost.ThreadContent);
+					Directory.CreateDirectory($"Downloads/{DirName}");
 				}
 				else
 				{
-					Directory.CreateDirectory($"Downloads/{OriginalPost.ID}");
+					Directory.CreateDirectory($"Downloads/{originalPost.ID}");
 				}
-				dirInit = true;
+
+				DirInit = true;
 			}
-			Console.WriteLine($"Directory initialized: {dirName}");
+
+			Console.WriteLine($"Directory initialized: {DirName}");
 		}
 
 		async private Task<string> GetThreadJson()
 		{
-			string content;
 			Uri JsonURL = new Uri($"{Url.Scheme}://a.4cdn.org/{Url.Segments[1]}thread/{Url.Segments[3]}.json");
-			HttpResponseMessage responseMsg = (await client.GetAsync(JsonURL)).EnsureSuccessStatusCode();
-			content = await responseMsg.Content.ReadAsStringAsync();
+			HttpResponseMessage responseMsg = (await Client.GetAsync(JsonURL)).EnsureSuccessStatusCode();
+			string content = await responseMsg.Content.ReadAsStringAsync();
 			return content.Substring(9, content.Length - 9).TrimEnd('}');
 		}
 
@@ -75,18 +76,18 @@ namespace fourchanDownloader
 
 		async public Task DownloadImage(ApiPostModel post)
 		{
-			string saveLoc = $"Downloads/{dirName}/{post.Filename}.{post.Ext}";
 			Uri ImageUrl = new Uri($"{Url.Scheme}://is2.4chan.org/{Url.Segments[1]}{post.ImageID}{post.Ext}");
 			HttpResponseMessage responseMsg;
+			string saveLoc = $"Downloads/{DirName}/{post.Filename}.{post.Ext}";
 
-			if (!PreserveFileName) saveLoc = $"Downloads/{dirName}/{post.ImageID}.{post.Ext}";
+			if (!PreserveFileName) saveLoc = $"Downloads/{DirName}/{post.ImageID}.{post.Ext}";
 
 			try
 			{
 				if (!File.Exists(saveLoc))
 				{
 					Console.WriteLine($"Downloading: {ImageUrl}...");
-					responseMsg = (await client.GetAsync(ImageUrl)).EnsureSuccessStatusCode();
+					responseMsg = (await Client.GetAsync(ImageUrl)).EnsureSuccessStatusCode();
 					File.WriteAllBytes(saveLoc, await responseMsg.Content.ReadAsByteArrayAsync());
 				}
 				else
