@@ -1,8 +1,8 @@
-# fourchanDownloader [![CodeFactor](https://www.codefactor.io/repository/github/willowsnow/fourchandownloader/badge)](https://www.codefactor.io/repository/github/willowsnow/fourchandownloader) 
+# fourchanDownloader [![CodeFactor](https://www.codefactor.io/repository/github/solwynn/fourchandownloader/badge)](https://www.codefactor.io/repository/github/solwynn/fourchandownloader) 
 A program I wrote in a few hours to download every image from a 4chan thread, with multi-thread support.
   
 # Downloads  
-[Download the latest fourchanDownloader at the Releases page](https://github.com/willowsnow/fourchanDownloader/releases)
+[Download the latest fourchanDownloader at the Releases page](https://github.com/solwynn/fourchanDownloader/releases)
 
 # Usage  
 fourchanDownloader is a command-line tool and has 3 command-line options:  
